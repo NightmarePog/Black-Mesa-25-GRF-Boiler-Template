@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
+import './Chat.css';
 
 const socket = io(window.location.origin);
 const DEFAULT_ROOM = 'general';
@@ -59,19 +60,20 @@ const Chat = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <button onClick={joinRoom}>Join Chat</button>
+                <button className="submit-button" onClick={joinRoom}>Join Chat</button>
             </div>
         );
     }
 
     return (
-        <div className="chat-container">
-            <div className="chat-messages">
+        <div className="ctverec">
+            <div className="messages-container">
                 {messages.map((msg, index) => (
                     <div 
                         key={index} 
-                        className={`message ${msg.type} ${
-                            msg.username === username ? 'user-message' : 'other-message'
+                        className={`${
+                            msg.type === 'system' ? 'system-message' : 
+                            msg.username === username ? 'message-right' : 'message-left'
                         }`}
                     >
                         {msg.type === 'system' ? (
@@ -86,15 +88,21 @@ const Chat = () => {
                 ))}
             </div>
             
-            <div className="chat-input">
-                <input
-                    type="text"
+            <div className="input-wrapper">
+                <textarea
+                    className="input-field"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                        }
+                    }}
                     placeholder="Type a message..."
+                    rows="1"
                 />
-                <button onClick={sendMessage}>Send</button>
+                <button className="submit-button" onClick={sendMessage}>Send</button>
             </div>
         </div>
     );
