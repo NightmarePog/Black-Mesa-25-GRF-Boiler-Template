@@ -1,0 +1,23 @@
+/* Základní styl pro okénko */
+.wrapper {
+    border: 1px solid #ccc; /* Rámeček */
+    border-radius: 8px; /* Zaoblené rohy */
+    padding: 16px; /* Odsazení uvnitř okénka */
+    max-width: 300px; /* Maximální šířka okénka */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Stín */
+    background-color: #f9f9f9; /* Světlé pozadí */
+  }
+  
+  /* Styl pro autora (menší text) */
+  .author {
+    font-size: 14px; /* Menší velikost písma */
+    color: #666; /* Světlejší barva textu */
+    margin-bottom: 8px; /* Odsazení pod autorem */
+  }
+  
+  /* Styl pro zprávu (větší text) */
+  .message {
+    font-size: 18px; /* Větší velikost písma */
+    color: #333; /* Tmavší barva textu */
+    margin: 0; /* Odstranění výchozího odsazení */
+  }

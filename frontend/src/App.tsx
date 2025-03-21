@@ -1,25 +1,16 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import MessageInput from './Components/MessageInput/MessageInput';
+import Message from './Components/Message/Message';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to .
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React :3
-        </a>
-      </header>
-    </div>
+    <>
+      <MessageInput/>
+      <Message author='me' message='Hello World!'/>
+      <Message author='someone else' message='Hello Wossrld!'/>
+      <Message author='not me' message='Hello s!'/>
+      <Message author='me' message='Hello a!'/>
+    </>
   );
 }
 
