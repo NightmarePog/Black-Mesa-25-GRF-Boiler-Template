@@ -11,6 +11,7 @@ def handle_join_room(data):
         'type': 'system',
         'content': f'{username} joined the room {room}'
     }, room=room)
+    
 
 def handle_new_message(data):
     message = data['message']
@@ -25,7 +26,7 @@ def handle_new_message(data):
     socketio.emit('new_message', {
         'username': username,
         'content': message,
-        'timestamp': "123"
+        'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }, room=room)
 
 def register_socket_handlers():

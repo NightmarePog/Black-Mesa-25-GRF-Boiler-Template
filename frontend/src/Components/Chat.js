@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000'); // Připojení k backendu
+const socket = io('http://localhost:5000');
+const DEFAULT_ROOM = 'general'; // Pevně nastavená místnost
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
     const [username, setUsername] = useState('');
-    const [room, setRoom] = useState('general');
     const [joined, setJoined] = useState(false);
 
     useEffect(() => {
@@ -30,21 +30,21 @@ const Chat = () => {
     }, []);
 
     const joinRoom = () => {
-        if (username && room) {
+        if (username) {
             socket.emit('join_room', {
                 username,
-                room
+                room: DEFAULT_ROOM // Použití pevné místnosti
             });
             setJoined(true);
         }
     };
 
     const sendMessage = () => {
-        if (messageInput.trim() && username && room) {
+        if (messageInput.trim() && username) {
             socket.emit('send_message', {
                 message: messageInput,
                 username,
-                room
+                room: DEFAULT_ROOM // Použití pevné místnosti
             });
             setMessageInput('');
         }
@@ -59,13 +59,7 @@ const Chat = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-                <input
-                    type="text"
-                    placeholder="Room"
-                    value={room}
-                    onChange={(e) => setRoom(e.target.value)}
-                />
-                <button onClick={joinRoom}>Join Room</button>
+                <button onClick={joinRoom}>Join Chat</button>
             </div>
         );
     }

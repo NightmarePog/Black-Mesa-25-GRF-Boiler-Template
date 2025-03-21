@@ -8,7 +8,7 @@ FROM python:3.12.2
 WORKDIR /app/backend
 RUN mkdir /app/frontend
 COPY --from=0 /app/frontend /app/frontend
-RUN pip install pipenv
+RUN pip install pipenv flask_sqlalchemy flask_socketio
 COPY backend .
 RUN ls && pipenv install --system --deploy
 EXPOSE 5000
