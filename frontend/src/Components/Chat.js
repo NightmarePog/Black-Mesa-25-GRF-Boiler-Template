@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:5000');
-const DEFAULT_ROOM = 'general'; // Pevně nastavená místnost
+const socket = io(window.location.origin);
+const DEFAULT_ROOM = 'general';
 
 const Chat = () => {
     const [messages, setMessages] = useState([]);
@@ -33,7 +33,7 @@ const Chat = () => {
         if (username) {
             socket.emit('join_room', {
                 username,
-                room: DEFAULT_ROOM // Použití pevné místnosti
+                room: DEFAULT_ROOM
             });
             setJoined(true);
         }
@@ -44,7 +44,7 @@ const Chat = () => {
             socket.emit('send_message', {
                 message: messageInput,
                 username,
-                room: DEFAULT_ROOM // Použití pevné místnosti
+                room: DEFAULT_ROOM
             });
             setMessageInput('');
         }
@@ -68,7 +68,12 @@ const Chat = () => {
         <div className="chat-container">
             <div className="chat-messages">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.type}`}>
+                    <div 
+                        key={index} 
+                        className={`message ${msg.type} ${
+                            msg.username === username ? 'user-message' : 'other-message'
+                        }`}
+                    >
                         {msg.type === 'system' ? (
                             <em>{msg.content}</em>
                         ) : (
