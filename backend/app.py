@@ -30,5 +30,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
-    socketio.run(app, debug=True)  # Pouze socketio.run!
+    app.run(debug=True, host="0.0.0.0")
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)  # Pouze socketio.run!
