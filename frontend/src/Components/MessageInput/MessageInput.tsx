@@ -3,7 +3,7 @@ import './style.css';
 function MessageInput() {
   return (
     <>
-    
+    <input></input>
     </>
   );
 }
