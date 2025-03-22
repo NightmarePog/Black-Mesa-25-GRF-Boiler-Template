@@ -7,3 +7,9 @@ Frontend: React, CSS, TS
 
 ## funkce:
 je jeden správce který může pořádat schůzky a ostatní se na jeho místnost můžou připojit
+
+## Black Mesa:
+Zeno
+Filip
+Lukáš
+Blahaj
