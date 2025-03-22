@@ -24,6 +24,7 @@ const AdminLogin: React.FC = () => {
             });
 
             if (response.ok) {
+                localStorage.setItem('admin', 'true');
                 navigate('/admin');
             } else {
                 const data = await response.json();
