@@ -48,27 +48,6 @@ def exists_room(room_code):
     else:
         return jsonify({"exists": False})
 
-'''
-@api_bp.route("/join_room/<room_code>", methods=["POST"])
-def join_room(room_code):
-    room = Room.query.filter_by(room_code=room_code).first()
-    if room:
-        data = request.get_json()
-        username = data.get("username")
-        if not username:
-            return jsonify({"error": "Nebyl poskytnut username"}), 400
-        
-        # Přidání uživatele do seznamu, pokud tam ještě není
-        if username not in room.users:
-            room.users.append(username)
-            db.session.commit()
-            return jsonify({"message": "Připojeno do místnosti!", "room_code": room.room_code, "users": room.users})
-        else:
-            return jsonify({"message": "Uživatel již je v místnosti", "room_code": room.room_code, "users": room.users})
-    else:
-        return jsonify({"error": "Místnost nenalezena"}), 404
-'''
-
 @api_bp.route("/hi", methods=["GET"])
 def hello():
     return jsonify({"message": "hi!"})

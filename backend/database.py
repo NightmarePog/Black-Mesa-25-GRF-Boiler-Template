@@ -11,3 +11,4 @@ class Room(db.Model):
     currently_presenting = db.Column(db.String(50), default=None)
     status = db.Column(db.String(50), default="waiting")
     presentation_history = db.Column(MutableList.as_mutable(db.PickleType), default=[])
+    ratings = db.Column(MutableList.as_mutable(db.PickleType), default=[])

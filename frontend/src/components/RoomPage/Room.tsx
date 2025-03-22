@@ -8,13 +8,24 @@ const socket = io(window.location.origin, {
     transports: ['websocket']
 });
 
+interface RatingData {
+    q1?: number;
+    q2?: number;
+    q3?: number;
+    comment?: string;
+}
+
 const Room: React.FC = () => {
     const { roomCode } = useParams<{ roomCode: string }>();
     const [users, setUsers] = useState<string[]>([]);
     const [presenters, setPresenters] = useState<string[]>([]);
     const [currentUser, setCurrentUser] = useState<string>('');
     const [currentPresenter, setCurrentPresenter] = useState<string | null>(null);
+    const [currentRatedPresenter, setCurrentRatedPresenter] = useState<string>('');
     const [roomStatus, setRoomStatus] = useState<'waiting' | 'started' | 'offline'>('waiting');
+    const [showRating, setShowRating] = useState(false);
+    const [ratings, setRatings] = useState<RatingData>({});
+    const [timeLeft, setTimeLeft] = useState(30);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username') || '';
@@ -30,34 +41,46 @@ const Room: React.FC = () => {
             room_code: roomCode
         });
 
-        socket.on('room_update', (data) => {
-            setUsers(data.users);
-            setPresenters(data.presenters || []);
-            setRoomStatus(data.status);
-            setCurrentPresenter(data.currently_presenting);
-        });
+        const handleRoomUpdate = (data: any) => {
+            setUsers(data?.users || []);
+            setPresenters(data?.presenters || []);
+            setRoomStatus(data?.status || 'waiting');
+            setCurrentPresenter(data?.currently_presenting || null);
+        };
 
-        socket.on('presenter_changed', (data) => {
-            setCurrentPresenter(data.currently_presenting);
-        });
+        const handleRatingStarted = (data: { presenter: string }) => {
+            setCurrentRatedPresenter(data.presenter);
+            setShowRating(true);
+            setTimeLeft(30);
+            
+            const timer = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        handleRatingSubmit();
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        };
 
-        socket.on('want_present', (data) => {
-            setPresenters(data.presenters);
-        });
-
-        socket.on('do_not_want_present', (data) => {
-            setPresenters(data.presenters);
-        });
-
-
-        socket.on('error', (error) => {
+        socket.on('room_update', handleRoomUpdate);
+        socket.on('presenter_changed', (data: any) => setCurrentPresenter(data.currently_presenting));
+        socket.on('want_present', handleRoomUpdate);
+        socket.on('do_not_want_present', handleRoomUpdate);
+        socket.on('rating_started', handleRatingStarted);
+        socket.on('error', (error: any) => {
             alert(error.message);
             window.location.href = '/';
         });
 
         return () => {
-            socket.off('room_update');
+            socket.off('room_update', handleRoomUpdate);
             socket.off('presenter_changed');
+            socket.off('want_present', handleRoomUpdate);
+            socket.off('do_not_want_present', handleRoomUpdate);
+            socket.off('rating_started', handleRatingStarted);
             socket.off('error');
             socket.emit('leave_room', {
                 username: storedUsername,
@@ -88,11 +111,83 @@ const Room: React.FC = () => {
         window.location.href = '/';
     };
 
+    const handleRatingChange = (question: string, value: number) => {
+        setRatings(prev => ({
+            ...prev,
+            [question]: value
+        }));
+    };
+
+    const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setRatings(prev => ({
+            ...prev,
+            comment: e.target.value
+        }));
+    };
+
+    const handleRatingSubmit = () => {
+        if (ratings.q1 && ratings.q2 && ratings.q3) {
+            socket.emit('submit_rating', {
+                room_code: roomCode,
+                username: currentUser,
+                presenter: currentRatedPresenter,
+                ...ratings
+            });
+            setShowRating(false);
+            setRatings({});
+        }
+    };
+
     const isPresenting = presenters.includes(currentUser);
     const isPresentationActive = roomStatus === 'started';
 
     return (
         <div className="room-container">
+            {showRating && (
+                <div className="rating-overlay">
+                    <h2>Hodnocení: {currentRatedPresenter}</h2>
+                    <div className="timer">Zbývající čas: {timeLeft}s</div>
+                    
+                    <div className="rating-form">
+                        {[1, 2, 3].map((qNum) => (
+                            <div key={qNum} className="rating-question">
+                                <h3>{qNum}. {[
+                                    'Přínosnost nápadu',
+                                    'Kreativita nápadu', 
+                                    'Uskutečnitelnost nápadu'
+                                ][qNum - 1]}</h3>
+                                <div className="scale-buttons">
+                                    {[-3, -2, -1, 1, 2, 3].map((value) => (
+                                        <button
+                                            key={value}
+                                            className={`scale-btn ${ratings[`q${qNum}` as keyof typeof ratings] === value ? 'selected' : ''}`}
+                                            onClick={() => handleRatingChange(`q${qNum}`, value)}
+                                        >
+                                            {value}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                        
+                        <textarea
+                            className="comment-box"
+                            placeholder="Vaše poznámky..."
+                            value={ratings.comment || ''}
+                            onChange={handleCommentChange}
+                        />
+                        
+                        <button
+                            className="submit-rating"
+                            onClick={handleRatingSubmit}
+                            disabled={!ratings.q1 || !ratings.q2 || !ratings.q3}
+                        >
+                            Odeslat hodnocení
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="counters">
                 <div className="counter">
                     <span className="counter-label">Připojeno:</span>
@@ -100,7 +195,7 @@ const Room: React.FC = () => {
                 </div>
                 <div className="counter">
                     <span className="counter-label">Prezentující:</span>
-                    <span className="counter-value">{presenters.length}</span>
+                    <span className="counter-value">{presenters?.length || 0}</span>
                 </div>
             </div>
 
@@ -133,10 +228,10 @@ const Room: React.FC = () => {
                 <div className="users-section">
                     <h2>Aktivní uživatelé</h2>
                     <div className="users-list">
-                        {users.map((user) => (
+                        {(users || []).map((user) => (
                             <div key={user} className="user-item">
                                 <span className="username">{user}</span>
-                                {presenters.includes(user) && (
+                                {presenters?.includes(user) && (
                                     <span className="presenter-icon">🎤</span>
                                 )}
                             </div>
