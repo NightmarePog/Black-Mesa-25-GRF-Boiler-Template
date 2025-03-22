@@ -16,3 +16,47 @@
     gap: 15px;
     align-items: center;
 }
+
+/* Nové styly pro prezentování */
+.presentation-controls {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.present-button {
+    background-color: #2196F3 !important;
+    padding: 12px 25px !important;
+    font-size: 1.1rem !important;
+}
+
+.present-button:hover {
+    background-color: #1976D2 !important;
+}
+
+.unpresent-button {
+    background-color: #f44336 !important;
+    padding: 12px 25px !important;
+    font-size: 1.1rem !important;
+}
+
+.unpresent-button:hover {
+    background-color: #d32f2f !important;
+}
+
+.presenters-list {
+    background: #fff3e0;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border: 2px solid #ffb74d;
+}
+
+.presenters-list h3 {
+    color: #ef6c00;
+}
+
+.users-list h3 {
+    color: #2e7d32;
+}
+
+/* Zbytek existujících stylů zůstává */
