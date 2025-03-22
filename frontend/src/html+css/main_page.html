@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main_page</title>
+    <link rel="stylesheet" href="main_page_background.css">
+</head>
+<body>
+    <div class="centered-square">
+        <div class="content">
+            <input type="text" id="roomCode" placeholder="Zadejte připojovací kód">
+            <button onclick="joinRoom()">Připojit se</button>
+        </div>
+    </div>
+
+    <script>
+        function joinRoom() {
+            const roomCode = document.getElementById('roomCode').value;
+            if(roomCode) {
+                window.location.href = `/join_room/${roomCode}`;
+            }
+        }
+    </script>
+</body>
+</html>
