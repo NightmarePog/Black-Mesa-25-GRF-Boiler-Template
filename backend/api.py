@@ -39,7 +39,16 @@ def login():
         return jsonify({"message": "Přihlášení bylo úspěšné!"})
     else:
         return jsonify({"error": "Špatné přihlašovací údaje"}), 401
+    
+@api_bp.route("/exists_room/<room_code>", methods=["GET"])
+def exists_room(room_code):
+    room = Room.query.filter_by(room_code=room_code).first()
+    if room:
+        return jsonify({"exists": True})
+    else:
+        return jsonify({"exists": False})
 
+'''
 @api_bp.route("/join_room/<room_code>", methods=["POST"])
 def join_room(room_code):
     room = Room.query.filter_by(room_code=room_code).first()
@@ -58,7 +67,7 @@ def join_room(room_code):
             return jsonify({"message": "Uživatel již je v místnosti", "room_code": room.room_code, "users": room.users})
     else:
         return jsonify({"error": "Místnost nenalezena"}), 404
-
+'''
 
 @api_bp.route("/hi", methods=["GET"])
 def hello():
