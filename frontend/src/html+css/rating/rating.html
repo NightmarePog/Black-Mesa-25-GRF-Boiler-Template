@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Hodnocení nápadu</title>
+    <link rel="stylesheet" href="rating.css">
+</head>
+<body>
+    <div class="container">
+        <h1>HODNOCENÍ NÁPADU</h1>
+        
+        <div id="timer">0:30</div>
+
+        <div class="question-steps">
+            <!-- První otázka -->
+            <div class="question-step active" data-step="1">
+                <h2>1) Jak moc je nápad přínosný?</h2>
+                <div class="scale-container">
+                    <button class="scale-btn" data-value="1">1 - nejméně</button>
+                    <button class="scale-btn" data-value="2">2 - málo</button>
+                    <button class="scale-btn" data-value="3">3 - středně</button>
+                    <button class="scale-btn" data-value="4">4 - hodně</button>
+                    <button class="scale-btn" data-value="5">5 - nejvíce</button>
+                </div>
+                
+                
+                <textarea class="comment" placeholder="Vaše poznámka..."></textarea>
+                <div class="nav-buttons">
+                    <button class="next-btn" disabled>Další otázka</button>
+                </div>
+            </div>
+
+            <!-- Druhá otázka -->
+            <div class="question-step" data-step="2">
+                <h2>2) Jak moc je nápad kreativní?</h2>
+                <div class="scale-container">
+                    <button class="scale-btn" data-value="1">1 - nejméně</button>
+                    <button class="scale-btn" data-value="2">2 - málo</button>
+                    <button class="scale-btn" data-value="3">3 - středně</button>
+                    <button class="scale-btn" data-value="4">4 - hodně</button>
+                    <button class="scale-btn" data-value="5">5 - nejvíce</button>
+                </div>
+                
+                
+                <textarea class="comment" placeholder="Vaše poznámka..."></textarea>
+                <div class="nav-buttons">
+                    <button class="next-btn" disabled>Další otázka</button>
+                </div>
+            </div>
+
+            <!-- Třetí otázka -->
+            <div class="question-step" data-step="3">
+                <h2>3) Jak moc je nápad uskutečnitelný?</h2>
+                <div class="scale-container">
+                    <button class="scale-btn" data-value="1">1 - nejméně</button>
+                    <button class="scale-btn" data-value="2">2 - málo</button>
+                    <button class="scale-btn" data-value="3">3 - středně</button>
+                    <button class="scale-btn" data-value="4">4 - hodně</button>
+                    <button class="scale-btn" data-value="5">5 - nejvíce</button>
+                </div>
+                
+                
+                <textarea class="comment" placeholder="Vaše poznámka..."></textarea>
+                <div class="nav-buttons">
+                    <button class="submit-btn" disabled>Odevzdat hodnocení</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="waiting-screen hidden">
+        <h1>Vyčkejte<br>na<br>hodnocení<br>ostatních...</h1>
+    </div>
+
+    <script>
+        document.querySelectorAll('.scale-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const parent = this.closest('.question-step');
+                parent.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Povolení navigačního tlačítka
+                const navButton = parent.querySelector('.next-btn, .submit-btn');
+                navButton.disabled = false;
+            });
+        });
+
+        document.querySelectorAll('.prev-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const currentStep = this.closest('.question-step');
+                const prevStep = document.querySelector(`[data-step="${parseInt(currentStep.dataset.step)-1}"]`);
+                switchStep(prevStep);
+            });
+        });
+
+        document.querySelectorAll('.next-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const currentStep = this.closest('.question-step');
+                const nextStep = document.querySelector(`[data-step="${parseInt(currentStep.dataset.step)+1}"]`);
+                switchStep(nextStep);
+            });
+        });
+
+        document.querySelector('.submit-btn').addEventListener('click', function() {
+            const ratings = collectRatings();
+            console.log('Celkové hodnocení:', ratings);
+            showWaitingScreen();
+        });
+
+        function switchStep(targetStep) {
+            document.querySelectorAll('.question-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            targetStep.classList.add('active');
+            
+            // Kontrola stavu tlačítka pro nový krok
+            const navButton = targetStep.querySelector('.next-btn, .submit-btn');
+            if(navButton) {
+                const hasSelection = targetStep.querySelector('.scale-btn.selected') !== null;
+                navButton.disabled = !hasSelection;
+            }
+        }
+
+        function collectRatings() {
+            return {
+                q1: getQuestionData(1),
+                q2: getQuestionData(2),
+                q3: getQuestionData(3)
+            };
+        }
+
+        function getQuestionData(step) {
+            const stepElement = document.querySelector(`[data-step="${step}"]`);
+            return {
+                value: stepElement.querySelector('.selected')?.dataset.value,
+                comment: stepElement.querySelector('.comment').value
+            };
+        }
+
+        let timer;
+let currentSeconds;
+const questionTime = 30; // Čas na otázku v sekundách
+
+// Spuštění časovače pro aktivní otázku
+function startTimer() {
+    clearInterval(timer);
+    currentSeconds = questionTime;
+    updateTimerDisplay();
+    
+    timer = setInterval(() => {
+        currentSeconds--;
+        updateTimerDisplay();
+        
+        if(currentSeconds <= 0) {
+            clearInterval(timer);
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = `0:${currentSeconds.toString().padStart(2, '0')}`;
+    
+    if(currentSeconds <= 10) {
+        timerElement.classList.add('low-time');
+    } else {
+        timerElement.classList.remove('low-time');
+    }
+}
+
+function handleTimeout() {
+    const currentStep = document.querySelector('.question-step.active');
+    const stepNumber = parseInt(currentStep.dataset.step);
+    
+    if(stepNumber < 3) {
+        switchStep(document.querySelector(`[data-step="${stepNumber + 1}"]`));
+    } else {
+        const ratings = collectRatings();
+        console.log('Automaticky odeslané hodnocení:', ratings);
+        alert('Čas vypršel! Hodnocení bylo automaticky odesláno.');
+    }
+}
+
+// Upravte funkci switchStep
+function switchStep(targetStep) {
+    document.querySelectorAll('.question-step').forEach(step => {
+        step.classList.remove('active');
+    });
+    targetStep.classList.add('active');
+    
+    // Resetovat timer pro novou otázku
+    startTimer();
+    
+    // Kontrola stavu tlačítka
+    const navButton = targetStep.querySelector('.next-btn, .submit-btn');
+    if(navButton) {
+        const hasSelection = targetStep.querySelector('.scale-btn.selected') !== null;
+        navButton.disabled = !hasSelection;
+    }
+}
+
+// Spustit timer při načtení stránky
+document.addEventListener('DOMContentLoaded', startTimer);
+
+function showWaitingScreen() {
+    document.querySelector('.container').classList.add('hidden');
+    document.querySelector('.waiting-screen').classList.remove('hidden');
+    clearInterval(timer);
+}
+
+// Upravte funkci pro odeslání
+document.querySelector('.submit-btn').addEventListener('click', function() {
+    const ratings = collectRatings();
+    console.log('Celkové hodnocení:', ratings);
+    showWaitingScreen();
+});
+
+// Upravte funkci handleTimeout pro poslední otázku
+function handleTimeout() {
+    const currentStep = document.querySelector('.question-step.active');
+    const stepNumber = parseInt(currentStep.dataset.step);
+    
+    if(stepNumber < 3) {
+        switchStep(document.querySelector(`[data-step="${stepNumber + 1}"]`));
+    } else {
+        const ratings = collectRatings();
+        console.log('Automaticky odeslané hodnocení:', ratings);
+        showWaitingScreen();
+    }
+}
+    </script>
+</body>
+</html>
