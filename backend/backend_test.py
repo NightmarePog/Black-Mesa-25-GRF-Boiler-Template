@@ -22,6 +22,7 @@ def test_client(test_app):
     # Testovací klient pro HTTP požadavky
     return test_app.test_client()
 
+    
 @pytest.fixture
 def socket_client(test_app):
     # Testovací klient pro WebSocket komunikaci
@@ -46,7 +47,7 @@ def test_full_room_lifecycle(test_client, socket_client):
         'username': 'TestUser',
         'room_code': room_code
     })
-    socket_client.sleep(1)  # Čekání na odpověď
+    socket_client.sleep(2)  # Čekání na odpověď
     
     assert user_data is not None
     user_id = user_data['user_id']

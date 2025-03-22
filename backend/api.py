@@ -69,3 +69,25 @@ def join_room(room_code):
 @api_bp.route("/hi", methods=["GET"])
 def hello():
     return jsonify({"message": "hi!"})
+
+@api_bp.route("/average_scores_optimized", methods=["GET"])
+def get_average_scores_optimized():
+    try:
+        # Výpočet průměrů přímo v databázi
+        averages = db.session.query(
+            func.avg(User.score1).label('avg1'),
+            func.avg(User.score2).label('avg2'),
+            func.avg(User.score3).label('avg3')
+        ).first()
+        
+        if not averages or None in averages:
+            return jsonify({"error": "Nelze vypočítat průměry"}), 404
+            
+        return jsonify({
+            "score1průměr": round(averages[0], 2),
+            "score2průměr": round(averages[1], 2),
+            "score3průměr": round(averages[2], 2)
+        })
+        
+    except Exception as e:
+        return jsonify({"error": f"Chyba při výpočtu průměrů: {str(e)}"}), 500
