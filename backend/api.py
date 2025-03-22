@@ -6,7 +6,7 @@ from utils import get_unique_room_code
 api_bp = Blueprint('api', __name__, url_prefix='/api/v1')
 
 username = "spravce"
-password = "spravce" #Think_diff3r3nt_Admin
+password = "Think_diff3r3nt_Admin" #Think_diff3r3nt_Admin
 
 @api_bp.route("/create_room/<room_name>", methods=["POST"])
 def create_room(room_name):

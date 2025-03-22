@@ -12,7 +12,7 @@ interface Room {
   presentation_history?: string[];
 }
 
-const socket = io('http://localhost:5000');
+const socket = io(window.location.origin);
 
 const AdminPanel = () => {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import './style.css';
 
-const socket = io('http://localhost:5000', {
+const socket = io(window.location.origin, {
     withCredentials: true,
     transports: ['websocket']
 });
