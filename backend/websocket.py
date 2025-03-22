@@ -7,6 +7,7 @@ def handle_join_room(data):
     username = data.get('username')
     room_code = data.get('room_code')
     print(username, room_code)
+    
     if not username or not room_code:
         print("Vyplňte všechny údaje")
         socketio.emit('error', {'message': 'Vyplňte všechny údaje'}, room=request.sid)
@@ -53,7 +54,7 @@ def want_present(data):
         socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
         return
     
-    # Přidání do user do databáze do presenters
+    # Přidání uživatele do presenters
     try:
         room.presenters.append(username)
         db.session.commit()
@@ -70,6 +71,7 @@ def do_not_want_present(data):
     username = data.get('username')
     room_code = data.get('room_code')
     print(username, room_code)
+    
     if not username or not room_code:
         print("Vyplňte všechny údaje")
         socketio.emit('error', {'message': 'Vyplňte všechny údaje'}, room=request.sid)
@@ -122,7 +124,17 @@ def handle_leave_room(data):
 
 def register_socket_handlers():
     print("Registrace socket handlerů")
+    
     socketio.on_event('join_room', handle_join_room)
     socketio.on_event('leave_room', handle_leave_room)
     socketio.on_event('want_present', want_present)
     socketio.on_event('do_not_want_present', do_not_want_present)
+
+    @socketio.on('connect')
+    def handle_connect():
+        print("Nový klient připojen:", request.sid)
+        socketio.emit('message', {'message': 'WebSocket připojen'}, room=request.sid)
+
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        print("Klient odpojen:", request.sid)
