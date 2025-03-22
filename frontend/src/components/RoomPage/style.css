@@ -1,15 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&display=swap');
-
 :root {
     --primary-color: #3498db;
     --danger-color: #e74c3c;
     --success-color: #2ecc71;
     --text-color: #2c3e50;
     --background-light: #f8f9fa;
-}
-
-body {
-    font-family: 'Dosis', sans-serif; /* Nastavení fontu pro celý dokument */
+    --warning-color: #f1c40f;
 }
 
 .room-container {
@@ -18,7 +13,6 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--background-light);
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .counters {
@@ -26,7 +20,6 @@ body {
     gap: 1rem;
     justify-content: space-between;
     margin-bottom: 2rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .counter {
@@ -42,14 +35,12 @@ body {
     display: block;
     font-size: 0.9rem;
     color: #666;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .counter-value {
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--primary-color);
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .main-content {
@@ -60,7 +51,6 @@ body {
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .waiting-title {
@@ -68,7 +58,6 @@ body {
     text-align: center;
     margin: 2rem 0;
     font-size: 1.8rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .presentation-button {
@@ -86,7 +75,6 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .presentation-button:hover {
@@ -98,17 +86,21 @@ body {
     background-color: var(--success-color);
 }
 
+.presentation-button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .users-section {
     width: 100%;
     margin: 2rem 0;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .users-section h2 {
     font-size: 1.3rem;
     color: var(--text-color);
     margin-bottom: 1rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .users-list {
@@ -116,7 +108,6 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.5rem;
     width: 100%;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .user-item {
@@ -127,18 +118,15 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .username {
     font-size: 1rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .presenter-icon {
     color: var(--success-color);
     font-size: 1.2rem;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .exit-button {
@@ -153,12 +141,119 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: auto;
-    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .exit-button:hover {
     background-color: #c0392b;
     transform: translateY(-2px);
+}
+
+.rating-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.timer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--danger-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.rating-form {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.rating-question {
+    margin-bottom: 2rem;
+}
+
+.rating-question h3 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.scale-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.5rem;
+}
+
+.scale-btn {
+    padding: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 0.5rem;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+}
+
+.scale-btn.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.scale-btn.negative {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.scale-btn.positive {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.comment {
+    width: 100%;
+    height: 100px;
+    padding: 1rem;
+    margin: 2rem 0;
+    border: 2px solid #ddd;
+    border-radius: 0.5rem;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
@@ -180,32 +275,22 @@ body {
         font-size: 1rem;
         padding: 0.8rem;
     }
-<<<<<<< Updated upstream
 
-    .current-presenter {
-        background: #fff;
+    .rating-overlay {
         padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-        text-align: center;
-        font-weight: bold;
-        color: var(--success-color);
     }
-    
-    .current-presenter-control {
-        margin: 1rem 0;
+
+    .scale-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .rating-form {
         padding: 1rem;
-        background: #fff;
-        border-radius: 0.5rem;
-        text-align: center;
     }
-    
-    .presentation-button:disabled {
-        background-color: #95a5a6;
-        cursor: not-allowed;
-        opacity: 0.7;
+
+    .timer {
+        font-size: 0.9rem;
+        top: 10px;
+        right: 10px;
     }
 }
-=======
-}
->>>>>>> Stashed changes
