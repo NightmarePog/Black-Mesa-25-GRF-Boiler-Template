@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&display=swap');
+
 body {
     margin: 0;
     padding: 0;
@@ -6,6 +8,7 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: #FFFFFF;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .centered-square {
@@ -17,17 +20,20 @@ body {
     align-items: center;
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .content {
     text-align: center;
     width: 80%;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 h2 {
     color: #2c3e50;
     margin-bottom: 30px;
     font-size: 1.8em;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 input {
@@ -39,11 +45,13 @@ input {
     border-radius: 25px;
     font-size: 16px;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 input:focus {
     border-color: #4CAF50;
     outline: none;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 button {
@@ -56,9 +64,11 @@ button {
     font-size: 16px;
     margin-top: 20px;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 button:hover {
     background-color: #2980b9;
     transform: translateY(-2px);
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }

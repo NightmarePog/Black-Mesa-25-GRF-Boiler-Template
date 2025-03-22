@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&display=swap');
+
 /* style.css */
 body {
     margin: 0;
     background-color: white;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .main-container {
@@ -11,6 +14,7 @@ body {
     min-height: 100vh;
     padding: 20px;
     background-color: white;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .content-box {
@@ -21,12 +25,14 @@ body {
     width: 100%;
     max-width: 500px;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .join-section, .username-section {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 input {
@@ -37,6 +43,7 @@ input {
     width: 100%;
     box-sizing: border-box;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 button {
@@ -49,6 +56,7 @@ button {
     font-size: 1rem;
     transition: all 0.3s ease;
     width: 100%;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 button:hover {
@@ -65,10 +73,12 @@ button:disabled {
     gap: 1rem;
     margin-top: 1rem;
     flex-direction: column;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .back-button {
     background-color: #666;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 .back-button:hover {
@@ -79,27 +89,32 @@ h3 {
     margin: 0 0 1rem 0;
     color: #333;
     text-align: center;
+    font-family: 'Dosis', sans-serif; /* Použití fontu */
 }
 
 @media (min-width: 768px) {
     .content-box {
         padding: 3rem;
         max-width: 600px;
+        font-family: 'Dosis', sans-serif; /* Použití fontu */
     }
     
     input {
         padding: 1rem;
         font-size: 1.1rem;
+        font-family: 'Dosis', sans-serif; /* Použití fontu */
     }
     
     button {
         padding: 1rem 2rem;
         font-size: 1.1rem;
+        font-family: 'Dosis', sans-serif; /* Použití fontu */
     }
     
     h3 {
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
+        font-family: 'Dosis', sans-serif; /* Použití fontu */
     }
 }
 
@@ -110,5 +125,6 @@ h3 {
     
     .button-group button {
         width: auto;
+        font-family: 'Dosis', sans-serif; /* Použití fontu */
     }
 }
