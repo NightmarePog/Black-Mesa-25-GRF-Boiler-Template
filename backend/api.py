@@ -19,14 +19,14 @@ def create_room(room_name):
 @api_bp.route("/get_rooms", methods=["GET"])
 def get_rooms():
     rooms = Room.query.all()
-    room_list = [{"room_code": room.room_code, "room_name": room.room_name, "users": room.users, "presenters": room.presenters} for room in rooms]
+    room_list = [{"room_code": room.room_code, "room_name": room.room_name, "users": room.users, "presenters": room.presenters, "status": room.status, "currently_presenting": room.currently_presenting} for room in rooms]
     return jsonify(room_list)
 
 @api_bp.route("/get_room_info/<room_code>", methods=["GET"])
 def get_room_info(room_code):
     room = Room.query.filter_by(room_code=room_code).first()
     if room:
-        return jsonify({"room_code": room.room_code, "room_name": room.room_name, "users": room.users})
+        return jsonify({"room_code": room.room_code, "room_name": room.room_name, "users": room.users, "presenters": room.presenters, "status": room.status, "currently_presenting": room.currently_presenting})
     else:
         return jsonify({"error": "Místnost neexistuje"}), 404
 

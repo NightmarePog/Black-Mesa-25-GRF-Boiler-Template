@@ -1,0 +1,335 @@
+:root {
+	--primary-color: #3498db;
+	--danger-color: #e74c3c;
+	--success-color: #2ecc71;
+	--warning-color: #f1c40f;
+	--text-color: #2c3e50;
+	--background-light: #f8f9fa;
+	--font-family: 'Arial', sans-serif;
+  }
+  
+  /* Základní reset a nastavení fontu */
+  body {
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-family);
+	background-color: var(--background-light);
+  }
+  
+  /* Kontejner aplikace */
+  .room-container {
+	padding: 1rem;
+	min-height: 100vh;
+	background-color: var(--background-light);
+  }
+  
+  /* Hlavička admin panelu */
+  .admin-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: #fff;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	margin-bottom: 2rem;
+  }
+  
+  .exit-button {
+	background-color: var(--danger-color);
+	color: #fff;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	font-weight: bold;
+  }
+  
+  /* Hlavní obsah */
+  .main-content {
+	max-width: 1200px;
+	margin: 0 auto;
+  }
+  
+  /* Counters */
+  .counters {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+  }
+  
+  .counter {
+	background: #fff;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	flex: 1;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	text-align: center;
+  }
+  
+  .counter-label {
+	display: block;
+	font-size: 0.9rem;
+	color: var(--text-color);
+  }
+  
+  .counter-value {
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--text-color);
+  }
+  
+  /* Sekce s místnostmi a účastníky */
+  .users-section {
+	margin-bottom: 2rem;
+  }
+  
+  .users-section h2 {
+	margin-bottom: 1rem;
+	color: var(--text-color);
+  }
+  
+  .users-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 1rem;
+  }
+  
+  /* Karta místnosti */
+  .room-card {
+	background: #fff;
+	border-radius: 0.5rem;
+	padding: 1rem;
+	cursor: pointer;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .room-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .room-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+  }
+  
+  .room-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .username {
+	font-weight: bold;
+	color: var(--text-color);
+  }
+  
+  .status-badge {
+	padding: 0.25rem 0.75rem;
+	border-radius: 1rem;
+	font-size: 0.75rem;
+	font-weight: bold;
+	color: #fff;
+	text-transform: uppercase;
+  }
+  
+  .room-code {
+	font-size: 0.85rem;
+	color: var(--text-color);
+  }
+  
+  .presenting-info {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+	color: var(--success-color);
+  }
+  
+  .presenter-icon {
+	font-size: 1rem;
+  }
+  
+  /* Akční tlačítka v rámci karty místnosti */
+  .room-actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+  }
+  
+  .action-button {
+	flex: 1;
+	padding: 0.5rem;
+	border: none;
+	border-radius: 0.5rem;
+	font-size: 0.85rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	color: #fff;
+  }
+  
+  .action-button.start {
+	background-color: var(--success-color);
+  }
+  
+  .action-button.start:hover {
+	background-color: #27ae60;
+  }
+  
+  .action-button.stop {
+	background-color: var(--danger-color);
+  }
+  
+  .action-button.stop:hover {
+	background-color: #c0392b;
+  }
+  
+  .action-button.waiting {
+	background-color: var(--warning-color);
+	color: var(--text-color);
+  }
+  
+  .action-button.waiting:hover {
+	background-color: #f39c12;
+  }
+  
+  /* Detail místnosti */
+  .room-detail {
+	background: #fff;
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1.5rem;
+  }
+  
+  .presentation-button {
+	background-color: var(--primary-color);
+	color: #fff;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	font-weight: bold;
+  }
+  
+  /* Zobrazení aktuálního stavu místnosti */
+  .status-display {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+  }
+  
+  .status-label {
+	font-size: 1rem;
+	font-weight: bold;
+	color: var(--text-color);
+  }
+  
+  /* Ovládací tlačítka v detailu místnosti */
+  .room-controls {
+	display: flex;
+	gap: 1rem;
+	margin: 1.5rem 0;
+  }
+  
+  .control-button {
+	flex: 1;
+	padding: 0.75rem;
+	border: none;
+	border-radius: 0.5rem;
+	font-weight: bold;
+	cursor: pointer;
+	color: #fff;
+	transition: background-color 0.3s ease;
+  }
+  
+  .control-button.active {
+	opacity: 0.8;
+  }
+  
+  .control-button:hover {
+	opacity: 0.9;
+  }
+  
+  .control-button:nth-child(1) {
+	background-color: var(--success-color);
+  }
+  
+  .control-button:nth-child(2) {
+	background-color: var(--danger-color);
+  }
+  
+  /* Loading a Error stavy */
+  .loading,
+  .error {
+	text-align: center;
+	padding: 2rem;
+	font-size: 1.2rem;
+	color: var(--text-color);
+  }
+  
+  /* Responzivní styly pro menší obrazovky */
+  @media (max-width: 768px) {
+	.admin-header {
+	  flex-direction: column;
+	  gap: 1rem;
+	}
+  
+	.users-list {
+	  grid-template-columns: 1fr;
+	}
+  
+	.room-detail {
+	  position: fixed;
+	  top: 0;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  background-color: var(--background-light);
+	  z-index: 100;
+	  overflow-y: auto;
+	  padding: 1rem;
+	}
+
+	.current-presenter {
+		background: #fff;
+		padding: 1rem;
+		border-radius: 0.5rem;
+		margin: 1rem 0;
+		text-align: center;
+		font-weight: bold;
+		color: var(--success-color);
+	}
+	
+	.current-presenter-control {
+		margin: 1rem 0;
+		padding: 1rem;
+		background: #fff;
+		border-radius: 0.5rem;
+		text-align: center;
+	}
+	
+	.presentation-button:disabled {
+		background-color: #95a5a6;
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+
+	.control-button:disabled {
+		background-color: #95a5a6 !important;
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+  }
+  
