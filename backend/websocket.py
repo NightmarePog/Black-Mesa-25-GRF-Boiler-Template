@@ -3,6 +3,10 @@ from extensions import db, socketio
 from flask_socketio import join_room, leave_room
 from database import Room  # Import your database model
 import random
+from datetime import datetime  # Přidat chybějící import
+import datetime
+
+votes_tracker = {}
 
 def start_room(data):
     room_code = data.get('room_code')
@@ -149,8 +153,10 @@ def want_present(data):
     
     # Odeslat aktualizovaný seznam všem v místnosti
     socketio.emit('want_present', {
+        'users': room.users,  # Přidáno
         'presenters': room.presenters,
-        'room_code': room_code
+        'room_code': room_code,
+        'status': room.status  # Přidáno
     }, room=room_code)
 
 def do_not_want_present(data):
@@ -215,6 +221,100 @@ def admin_join(data):
         print(f"Admin připojen do místnosti: {room_code}")
 
 
+def handle_start_rating(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    
+    if room and room.currently_presenting:
+        socketio.emit('rating_started', {
+            'presenter': room.currently_presenting
+        }, room=room_code)
+        
+        # Resetujeme stav hodnocení
+        room.ratings = []
+        db.session.commit()
+
+active_ratings = {}
+
+def start_rating(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    
+    if room and room.currently_presenting:
+        # Inicializace s aktuálními uživateli
+        active_ratings[room_code] = {
+            'presenter': room.currently_presenting,
+            'users': set(room.users),  # Použít skutečné uživatele
+            'rated': set(),
+            'ratings': []
+        }
+        
+        socketio.emit('rating_started', {
+            'presenter': room.currently_presenting
+        }, room=room_code)
+
+def handle_rating(data):
+    room_code = data.get('room_code')
+    username = data.get('username')
+    presenter = data.get('presenter')
+    
+    if not all([room_code, username, presenter]):
+        return
+
+    if room_code in active_ratings:
+        # Přidání hodnocení
+        rating_data = {
+            'user': username,
+            'presenter': presenter,
+            'q1': data.get('q1'),
+            'q2': data.get('q2'),
+            'q3': data.get('q3'),
+            'comment': data.get('comment'),
+            'timestamp': datetime.datetime.now()
+        }
+        
+        active_ratings[room_code]['rated'].add(username)
+        active_ratings[room_code]['ratings'].append(rating_data)
+
+        # Kontrola kompletního hodnocení
+        if active_ratings[room_code]['users'].issubset(active_ratings[room_code]['rated']):
+            room = Room.query.filter_by(room_code=room_code).first()
+            if room:
+                room.ratings.extend(active_ratings[room_code]['ratings'])
+                db.session.commit()
+            
+            change_presenter({'room_code': room_code})
+            del active_ratings[room_code]
+            socketio.emit('rating_finished', room=room_code)
+
+def handle_submit_rating(data):
+    room_code = data.get('room_code')
+    username = data.get('username')
+    rating = data.get('rating')
+    
+    if room_code in votes_tracker:
+        tracker = votes_tracker[room_code]
+        if username in tracker['expected']:
+            tracker['received'].add(username)
+            
+            # Uložení hodnocení do databáze
+            room = Room.query.filter_by(room_code=room_code).first()
+            if room:
+                room.presentation_history.append({
+                    'presenter': tracker['presenter'],
+                    'user': username,
+                    'rating': rating,
+                    'timestamp': datetime.now()
+                })
+                db.session.commit()
+            
+            # Kontrola dokončení
+            if len(tracker['received']) == len(tracker['expected']):
+                change_presenter({'room_code': room_code})
+                socketio.emit('end_rating', room=room_code)
+                del votes_tracker[room_code]
+
+
 def register_socket_handlers():
     print("Registrace socket handlerů")
     socketio.on_event('join_room', handle_join_room)
@@ -226,3 +326,5 @@ def register_socket_handlers():
     socketio.on_event('waiting_room', waiting_room)
     socketio.on_event('admin_join', admin_join)
     socketio.on_event('change_presenter', change_presenter)
+    socketio.on_event('start_rating', start_rating)
+    socketio.on_event('submit_rating', handle_rating) 
