@@ -1,30 +1,9 @@
-### TDA Black Mesa Flask+React boiler plate
-Tohle je jednoduchý boilerplate
+# TDA Black Mesa Meeting app
+Toto je aplikace vytvořená v rámci soutěže Tour De App
 
-# POTŘEBNÝ SW:
-Python+requirements
-node.js/npm
-doporučuju docker
+## technologie:
+Backend: Flask
+Frontend: React, CSS, TS
 
-# jak ho používat?
-Frontend:
-Spuštění aplikace na testování:
-```npm run start```
-postavení frontendu:
-```npm run build```
-
-Backend:
-spuštění: 
-```python3 app.py```
-
-# Docker
-build:
-```
-sudo docker build -t app .
-```
-run:
-```
-sudo docker run -p 5000:5000 app
-```
-
-[Trello](https://trello.com/b/JMqFEKTg/black-mesa-grf)
+## funkce:
+je jeden správce který může pořádat schůzky a ostatní se na jeho místnost můžou připojit
