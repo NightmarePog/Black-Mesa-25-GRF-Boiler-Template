@@ -8,7 +8,7 @@ const socket = io('http://localhost:5000', {
     transports: ['websocket']
 });
 
-const Room: React.FC = () => {
+const RoomPage: React.FC = () => {
     const { roomCode } = useParams<{ roomCode: string }>();
     const [users, setUsers] = useState<string[]>([]);
     const [presenters, setPresenters] = useState<string[]>([]);
@@ -155,4 +155,4 @@ const Room: React.FC = () => {
     );
 };
 
-export default Room;
+export default RoomPage;

@@ -1,0 +1,38 @@
+/* Definice proměnných pro barvy - světlejší režim (light mode) */
+:root {
+    --background-color: white;
+    --text-color: black;
+    --primary-color: black;
+    --secondary-color: gray;
+  }
+  
+  /* Dark mode - změna proměnných pro tmavší režim */
+  body.dark-mode {
+    --background-color: #121212;
+    --text-color: white;
+    --primary-color: white;
+    --secondary-color: lightgray;
+  }
+  
+  /* Základní styl pro tělo */
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Styl pro tlačítka a ostatní komponenty */
+  button {
+    background-color: var(--primary-color);
+    color: var(--background-color); /* Přepíná barvu textu podle pozadí */
+    border: 1px solid var(--secondary-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Další styly pro různé komponenty */
+  .component {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
