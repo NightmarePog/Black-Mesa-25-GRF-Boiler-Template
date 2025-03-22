@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main_page</title>
+    <link rel="stylesheet" href="main_page_background.css">
+</head>
+<body>
+    <div class="centered-square">
+        <div class="content">
+            <input type="text" id="roomCode" placeholder="Zadejte připojovací kód">
+            <button onclick="checkRoom()">Připojit se</button>
+        </div>
+    </div>
+
+    <!-- Nové modální okno -->
+    <div id="usernameModal" class="modal">
+        <div class="modal-content">
+            <h3>Zadejte uživatelské jméno</h3>
+            <input type="text" id="userName" placeholder="Uživatelské jméno">
+            <button onclick="joinWithUsername()">Potvrdit</button>
+        </div>
+    </div>
+
+    <script>
+        async function checkRoom() {
+            const roomCode = document.getElementById('roomCode').value;
+            if(!roomCode) return;
+
+            try {
+                const response = await fetch(`/exists_room/${roomCode}`);
+                const data = await response.json();
+                
+                if(data.exists) {
+                    document.getElementById('usernameModal').style.display = 'flex';
+                } else {
+                    alert('Místnost neexistuje!');
+                }
+            } catch(error) {
+                console.error('Chyba:', error);
+            }
+        }
+
+        function joinWithUsername() {
+            const userName = document.getElementById('userName').value;
+            const roomCode = document.getElementById('roomCode').value;
+            if(userName) {
+                window.location.href = `/join_room/${roomCode}?username=${userName}`;
+            }
+        }
+
+        // Zavření modálního okna při kliknutí mimo
+        window.onclick = function(event) {
+            const modal = document.getElementById('usernameModal');
+            if(event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
