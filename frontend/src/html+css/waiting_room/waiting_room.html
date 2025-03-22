@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Čekací místnost</title>
+    <link rel="stylesheet" href="waiting_room_background.css">
+</head>
+<body>
+    <div id="totalUsers" class="counter">Připojeno: 0</div>
+    <div id="presenters" class="counter">Prezentující: 0</div>
+    
+    <div class="container">
+        <h1>ČEKÁNÍ<br>NA <br> ZAHÁJENÍ</h1>
+        <button id="presentationBtn" onclick="toggleButton()">CHCI PREZENTOVAT</button>
+    </div>
+
+    <button id="exitBtn">ODEJÍT</button>
+
+    <script>
+        let isPresenter = false;
+        const ws = new WebSocket('wss://your-websocket-server.com');
+
+        ws.onopen = () => {
+            console.log('Connected to server');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if(data.type === 'countUpdate') {
+                document.getElementById('totalUsers').textContent = `Připojeno: ${data.totalUsers}`;
+                document.getElementById('presenters').textContent = `Prezentující: ${data.presenters}`;
+            }
+        };
+
+        function toggleButton() {
+            const btn = document.getElementById('presentationBtn');
+            isPresenter = !isPresenter;
+            btn.innerHTML = isPresenter ? "NECHCI PREZENTOVAT" : "CHCI PREZENTOVAT";
+            
+            ws.send(JSON.stringify({
+                type: 'presenterUpdate',
+                isPresenter: isPresenter
+            }));
+        }
+    </script>
+</body>
+</html>
