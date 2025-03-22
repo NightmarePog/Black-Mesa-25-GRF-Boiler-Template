@@ -1,12 +1,13 @@
-import './style.css'
+import './style.css';
 
-function ConfirmButton() {
+type ConfirmButtonProps = {
+    onClick: () => void; // Určuje, že prop `onClick` je funkce
+};
 
+function ConfirmButton({ onClick }: ConfirmButtonProps) { // Přijímáme prop `onClick`
     return ( 
-    <>
-        <button></button>
-    </>
+        <button onClick={onClick}>Confirm</button> 
+    );
+}
 
-)}
-
-export default ConfirmButton
+export default ConfirmButton;
