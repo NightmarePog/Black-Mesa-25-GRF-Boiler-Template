@@ -30,7 +30,7 @@ const Room: React.FC = () => {
 
         socket.on('room_update', (data) => {
             setUsers(data.users);
-            if(data.presenters) setPresenters(data.presenters);
+            setPresenters(data.presenters || []);
         });
 
         socket.on('want_present', (data) => {
@@ -58,18 +58,18 @@ const Room: React.FC = () => {
         };
     }, [roomCode]);
 
-    const handleWantPresent = () => {
-        socket.emit('want_present', {
-            username: currentUser,
-            room_code: roomCode
-        });
-    };
-
-    const handleDoNotWantPresent = () => {
-        socket.emit('do_not_want_present', {
-            username: currentUser,
-            room_code: roomCode
-        });
+    const togglePresentation = () => {
+        if (presenters.includes(currentUser)) {
+            socket.emit('do_not_want_present', {
+                username: currentUser,
+                room_code: roomCode
+            });
+        } else {
+            socket.emit('want_present', {
+                username: currentUser,
+                room_code: roomCode
+            });
+        }
     };
 
     const handleLeaveRoom = () => {
@@ -84,49 +84,55 @@ const Room: React.FC = () => {
 
     return (
         <div className="room-container">
-            <div className="room-header">
-                <h2>Místnost: {roomCode}</h2>
-                <div className="user-info">
-                    <span>Přihlášen jako: {currentUser}</span>
-                    <button onClick={handleLeaveRoom}>Opustit místnost</button>
+            <div className="counters">
+                <div className="counter">
+                    <span className="counter-label">Připojeno:</span>
+                    <span className="counter-value">{users.length}</span>
+                </div>
+                <div className="counter">
+                    <span className="counter-label">Prezentující:</span>
+                    <span className="counter-value">{presenters.length}</span>
                 </div>
             </div>
 
-            <div className="presentation-controls">
-                {isPresenting ? (
-                    <button 
-                        className="unpresent-button"
-                        onClick={handleDoNotWantPresent}
-                    >
-                        Nechci prezentovat
-                    </button>
-                ) : (
-                    <button 
-                        className="present-button"
-                        onClick={handleWantPresent}
-                    >
-                        Chci prezentovat
-                    </button>
-                )}
-            </div>
+            <main className="main-content">
+                <h1 className="waiting-title">Čekání na zahájení</h1>
+                
+                <button 
+                    className={`presentation-button ${isPresenting ? 'active' : ''}`}
+                    onClick={togglePresentation}
+                >
+                    {isPresenting ? (
+                        <>
+                            <span className="icon">⭐</span>
+                            Prezentuji
+                        </>
+                    ) : (
+                        'Chci prezentovat'
+                    )}
+                </button>
 
-            <div className="users-list">
-                <h3>Aktivní uživatelé ({users.length}):</h3>
-                <ul>
-                    {users.map((user, index) => (
-                        <li key={index}>{user}</li>
-                    ))}
-                </ul>
-            </div>
+                <div className="users-section">
+                    <h2>Aktivní uživatelé</h2>
+                    <div className="users-list">
+                        {users.map((user) => (
+                            <div key={user} className="user-item">
+                                <span className="username">{user}</span>
+                                {presenters.includes(user) && (
+                                    <span className="presenter-icon">🎤</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
-            <div className="presenters-list">
-                <h3>Prezentující ({presenters.length}):</h3>
-                <ul>
-                    {presenters.map((presenter, index) => (
-                        <li key={index}>{presenter}</li>
-                    ))}
-                </ul>
-            </div>
+                <button 
+                    className="exit-button"
+                    onClick={handleLeaveRoom}
+                >
+                    Opustit místnost
+                </button>
+            </main>
         </div>
     );
 };

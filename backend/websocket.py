@@ -33,6 +33,7 @@ def handle_join_room(data):
     # Odeslat aktualizovaný seznam všem v místnosti
     socketio.emit('room_update', {
         'users': room.users,
+        "presenters": room.presenters,
         'room_code': room_code
     }, room=room_code)
 
@@ -101,6 +102,13 @@ def handle_leave_room(data):
     if room and username in room.users:
         try:
             room.users.remove(username)
+            if username in room.presenters:
+                try:
+                    room.presenters.remove(username)
+                    db.session.commit()
+                except Exception as e:
+                    print(f"Chyba při odebírání uživatele z presenters: {e}")
+
             db.session.commit()
         except Exception as e:
             print(f"Chyba při odstraňování uživatele: {e}")
@@ -108,6 +116,7 @@ def handle_leave_room(data):
     leave_room(room_code)
     socketio.emit('room_update', {
         'users': room.users if room else [],
+        'presenters': room.presenters if room else [],
         'room_code': room_code
     }, room=room_code)
 
