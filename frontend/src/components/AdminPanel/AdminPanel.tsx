@@ -21,30 +21,51 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch('/api/v1/get_rooms');
+      if (!response.ok) throw new Error('Failed to load rooms');
+      const data = await response.json();
+      setRooms(data.map((room: Room) => ({
+        ...room,
+        presentation_history: room.presentation_history || []
+      })));
+
+      data.forEach((room: Room) => {
+        socket.emit('admin_join', { room_code: room.room_code });
+      });
+    } catch (err) {
+      setError('Failed to load rooms');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    const roomName = window.prompt('Zadejte název místnosti:');
+    if (!roomName) return;
+
+    try {
+      const response = await fetch(`/api/v1/create_room/${encodeURIComponent(roomName)}`, {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create room');
+      }
+
+      const data = await response.json();
+      alert(`Místnost vytvořena! Kód: ${data.room_code}`);
+      await fetchRooms();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Chyba při vytváření místnosti');
+    }
+  };
   useEffect(() => {
     const checkAdmin = () => {
       const isAdmin = localStorage.getItem('admin') === 'true';
       if (!isAdmin) navigate('/login');
-    };
-
-    const fetchRooms = async () => {
-      try {
-        const response = await fetch('/api/v1/get_rooms');
-        if (!response.ok) throw new Error('Failed to load rooms');
-        const data = await response.json();
-        setRooms(data.map((room: Room) => ({
-          ...room,
-          presentation_history: room.presentation_history || []
-        })));
-
-        data.forEach((room: Room) => {
-          socket.emit('admin_join', { room_code: room.room_code });
-        });
-      } catch (err) {
-        setError('Failed to load rooms');
-      } finally {
-        setLoading(false);
-      }
     };
 
     checkAdmin();
@@ -144,9 +165,14 @@ const AdminPanel = () => {
     <div className="room-container">
       <header className="admin-header">
         <h1>Admin Panel</h1>
-        <button onClick={handleLogout} className="exit-button">
-          Odhlásit se
-        </button>
+        <div>
+          <button onClick={handleCreateRoom} className="create-button">
+            Vytvořit místnost
+          </button>
+          <button onClick={handleLogout} className="exit-button">
+            Odhlásit se
+          </button>
+        </div>
       </header>
 
       <div className="main-content">
