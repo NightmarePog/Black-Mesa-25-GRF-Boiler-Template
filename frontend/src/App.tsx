@@ -1,19 +1,19 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
-import Chat from "./Components/Chat";
-import './Components/Chat.css';
-import Feature from './Components/Feature';
+import MainPage from './components/MainPage/MainPage';
+import LoginPage from './components/LoginPage/LoginPage';
+import Room from './components/RoomPage/Room'; // Přidejte import komponenty Room
+import AdminLogin from './components/LoginPage/LoginPage';
 
 function App() {
   return (
     <Router>
-      <div className="App">
-        <h1>Chat Application</h1>
-        <Routes>
-          <Route path="/" element={<Chat />} />
-          <Route path="/feature" element={<Feature />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/room/:roomCode" element={<Room />} /> {/* Přidaná routa */}
+        <Route path="/admin" element={<AdminLogin />} />
+      </Routes>
     </Router>
   );
 }

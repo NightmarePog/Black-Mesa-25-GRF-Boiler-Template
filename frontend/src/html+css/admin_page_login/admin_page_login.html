@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="admin_page_login_background.css">
+</head>
+<body>
+    <div class="centered-square">
+        <div class="content">
+            <h2>Admin <br> Přihlášení</h2>
+            <input type="text" id="adminName" placeholder="Jméno">
+            <input type="password" id="adminPassword" placeholder="Heslo">
+            <button onclick="adminLogin()">Přihlásit se</button>
+        </div>
+    </div>
+
+    <script>
+        function adminLogin() {
+            const adminName = document.getElementById('adminName').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+            
+            // Zde by bylo ověření přihlašovacích údajů
+            console.log('Jméno:', adminName, 'Heslo:', adminPassword);
+            
+            // Přesměrování po úspěšném přihlášení
+            // window.location.href = "/admin_dashboard";
+        }
+    </script>
+</body>
+</html>
