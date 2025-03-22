@@ -7,6 +7,8 @@ import AdminPanel from './components/AdminPanel/AdminPanel';
 
 function App() {
   return (
+    <>
+    <title>Meet&Think</title>
     <Router>
       <Routes>
         <Route path="/" element={<MainPage />} />
@@ -15,6 +17,7 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
+    </>
   );
 }
 
