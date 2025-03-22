@@ -1,10 +1,10 @@
 import './App.css';
-import ExampleButton from './components/ExampleButton/ExampleButton';
+import MainPage from './components/MainPage/MainPage';
 
 function App() {
   return (
     <>
-      <ExampleButton/>
+      <MainPage/>
     </>
   );
 }

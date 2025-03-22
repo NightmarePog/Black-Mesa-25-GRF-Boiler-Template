@@ -5,7 +5,7 @@ import os
 from api import api_bp
 from frontend_routes import frontend_bp
 from extensions import db, socketio
-from database import rooms 
+from database import Room 
 
 def create_app():
     app = Flask(__name__, static_folder="../frontend/build/static")
