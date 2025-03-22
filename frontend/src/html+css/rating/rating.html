@@ -9,6 +9,8 @@
     <div class="container">
         <h1>HODNOCENÍ NÁPADU</h1>
         
+        <div id="timer">0:30</div>
+
         <div class="question-steps">
             <!-- První otázka -->
             <div class="question-step active" data-step="1">
@@ -42,7 +44,6 @@
                 
                 <textarea class="comment" placeholder="Vaše poznámka..."></textarea>
                 <div class="nav-buttons">
-                    <button class="prev-btn">Předchozí otázka</button>
                     <button class="next-btn" disabled>Další otázka</button>
                 </div>
             </div>
@@ -61,11 +62,14 @@
                 
                 <textarea class="comment" placeholder="Vaše poznámka..."></textarea>
                 <div class="nav-buttons">
-                    <button class="prev-btn">Předchozí otázka</button>
                     <button class="submit-btn" disabled>Odevzdat hodnocení</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="waiting-screen hidden">
+        <h1>Vyčkejte<br>na<br>hodnocení<br>ostatních...</h1>
     </div>
 
     <script>
@@ -100,7 +104,7 @@
         document.querySelector('.submit-btn').addEventListener('click', function() {
             const ratings = collectRatings();
             console.log('Celkové hodnocení:', ratings);
-            alert('Děkujeme za hodnocení!');
+            showWaitingScreen();
         });
 
         function switchStep(targetStep) {
@@ -132,6 +136,99 @@
                 comment: stepElement.querySelector('.comment').value
             };
         }
+
+        let timer;
+let currentSeconds;
+const questionTime = 30; // Čas na otázku v sekundách
+
+// Spuštění časovače pro aktivní otázku
+function startTimer() {
+    clearInterval(timer);
+    currentSeconds = questionTime;
+    updateTimerDisplay();
+    
+    timer = setInterval(() => {
+        currentSeconds--;
+        updateTimerDisplay();
+        
+        if(currentSeconds <= 0) {
+            clearInterval(timer);
+            handleTimeout();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const timerElement = document.getElementById('timer');
+    timerElement.textContent = `0:${currentSeconds.toString().padStart(2, '0')}`;
+    
+    if(currentSeconds <= 10) {
+        timerElement.classList.add('low-time');
+    } else {
+        timerElement.classList.remove('low-time');
+    }
+}
+
+function handleTimeout() {
+    const currentStep = document.querySelector('.question-step.active');
+    const stepNumber = parseInt(currentStep.dataset.step);
+    
+    if(stepNumber < 3) {
+        switchStep(document.querySelector(`[data-step="${stepNumber + 1}"]`));
+    } else {
+        const ratings = collectRatings();
+        console.log('Automaticky odeslané hodnocení:', ratings);
+        alert('Čas vypršel! Hodnocení bylo automaticky odesláno.');
+    }
+}
+
+// Upravte funkci switchStep
+function switchStep(targetStep) {
+    document.querySelectorAll('.question-step').forEach(step => {
+        step.classList.remove('active');
+    });
+    targetStep.classList.add('active');
+    
+    // Resetovat timer pro novou otázku
+    startTimer();
+    
+    // Kontrola stavu tlačítka
+    const navButton = targetStep.querySelector('.next-btn, .submit-btn');
+    if(navButton) {
+        const hasSelection = targetStep.querySelector('.scale-btn.selected') !== null;
+        navButton.disabled = !hasSelection;
+    }
+}
+
+// Spustit timer při načtení stránky
+document.addEventListener('DOMContentLoaded', startTimer);
+
+function showWaitingScreen() {
+    document.querySelector('.container').classList.add('hidden');
+    document.querySelector('.waiting-screen').classList.remove('hidden');
+    clearInterval(timer);
+}
+
+// Upravte funkci pro odeslání
+document.querySelector('.submit-btn').addEventListener('click', function() {
+    const ratings = collectRatings();
+    console.log('Celkové hodnocení:', ratings);
+    showWaitingScreen();
+});
+
+// Upravte funkci handleTimeout pro poslední otázku
+function handleTimeout() {
+    const currentStep = document.querySelector('.question-step.active');
+    const stepNumber = parseInt(currentStep.dataset.step);
+    
+    if(stepNumber < 3) {
+        switchStep(document.querySelector(`[data-step="${stepNumber + 1}"]`));
+    } else {
+        const ratings = collectRatings();
+        console.log('Automaticky odeslané hodnocení:', ratings);
+        showWaitingScreen();
+    }
+}
     </script>
 </body>
 </html>
