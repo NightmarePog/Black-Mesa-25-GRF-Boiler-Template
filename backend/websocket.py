@@ -2,56 +2,127 @@ from flask import request
 from extensions import db, socketio
 from flask_socketio import join_room, leave_room
 from database import Room  # Import your database model
+import random
 
+def start_room(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    if room:
+        # Vybrat náhodného prezentujícího
+        if len(room.presenters) > 0:
+            import random
+            room.currently_presenting = random.choice(room.presenters)
+        else:
+            room.currently_presenting = None
+        
+        room.status = "started"
+        db.session.commit()
+        
+        socketio.emit('room_update', {
+            'users': room.users,
+            'presenters': room.presenters,
+            'room_code': room_code,
+            'status': room.status,
+            'currently_presenting': room.currently_presenting
+        }, room=room_code)
+    else:
+        socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
+
+def change_presenter(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    
+    if not room or not room.presenters:
+        return
+
+    # Získat prezentující, kteří ještě neprezentovali
+    available = [p for p in room.presenters if p not in room.presentation_history]
+    
+    # Pokud všichni už prezentovali, resetovat historii
+    if not available:
+        available = room.presenters
+        room.presentation_history = []
+
+    # Vybrat náhodného prezentujícího
+    new_presenter = random.choice(available)
+    room.presentation_history.append(new_presenter)
+    room.currently_presenting = new_presenter
+    
+    db.session.commit()
+
+    socketio.emit('presenter_changed', {
+        'room_code': room_code,
+        'currently_presenting': new_presenter,
+        'presentation_history': room.presentation_history,
+        'remaining_presenters': len(room.presenters) - len(room.presentation_history)
+    }, room=room_code)
+
+def stop_room(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    if room:
+        room.status = "offline"
+        db.session.commit()
+        socketio.emit('room_update', {
+            'users': room.users,
+            'presenters': room.presenters,
+            'room_code': room_code,
+            "status": room.status
+        }, room=room_code)
+    else:
+        print("Místnost neexistuje")
+        socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
+
+def waiting_room(data):
+    room_code = data.get('room_code')
+    room = Room.query.filter_by(room_code=room_code).first()
+    if room:
+        room.status = "waiting"
+        db.session.commit()
+        socketio.emit('room_update', {
+            'users': room.users,
+            'presenters': room.presenters,
+            'room_code': room_code,
+            "status": room.status
+        }, room=room_code)
+    else:
+        print("Místnost neexistuje")
+        socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
 
 def handle_join_room(data):
-    room_code = data.get('room_code')
     username = data.get('username')
-    
+    room_code = data.get('room_code')
+    print(username, room_code)
     if not username or not room_code:
+        print("Vyplňte všechny údaje")
         socketio.emit('error', {'message': 'Vyplňte všechny údaje'}, room=request.sid)
         return
 
     room = Room.query.filter_by(room_code=room_code).first()
     if not room:
+        print("Místnost neexistuje")
         socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
         return
 
-    try:
-        # Vytvoření nového uživatele
-        new_user = User(
-            name=username,
-            score1=0,
-            score2=0,
-            score3=0
-        )
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Přidání ID uživatele do místnosti
-        if new_user.id not in room.user_ids:
-            room.user_ids.append(new_user.id)
+    # Přidání uživatele do místnosti
+    if username not in room.users:
+        print("Přidání uživatele do místnosti")
+        try:
+            room.users.append(username)
             db.session.commit()
+        except Exception as e:
+            socketio.emit('error', {'message': 'Chyba databáze'}, room=request.sid)
+            return
 
-        join_room(room_code)
-        
-        # Odeslat ID nového uživatele zpět klientovi
-        socketio.emit('user_registered', {
-            'user_id': new_user.id,
-            'username': new_user.name
-        }, room=request.sid)
-
-        # Broadcast aktualizace místnosti
-        socketio.emit('room_update', {
-            'users': [{"id": u.id, "name": u.name} for u in User.query.filter(User.id.in_(room.user_ids)).all()],
-            'presenters': room.presenter_ids,
-            'room_code': room_code
-        }, room=room_code)
-
-    except Exception as e:
-        db.session.rollback()
-        socketio.emit('error', {'message': 'Chyba při vytváření uživatele'}, room=request.sid)
-        print(f"Chyba: {str(e)}")
+    join_room(room_code)
+    
+    # Odeslat aktualizovaný seznam všem v místnosti
+    socketio.emit('room_update', {
+        'users': room.users,
+        "presenters": room.presenters,
+        'room_code': room_code,
+        "status": room.status
+    }, room=room_code)
 
 def want_present(data):
     username = data.get('username')
@@ -69,7 +140,7 @@ def want_present(data):
         socketio.emit('error', {'message': 'Místnost neexistuje'}, room=request.sid)
         return
     
-    # Přidání uživatele do presenters
+    # Přidání do user do databáze do presenters
     try:
         room.presenters.append(username)
         db.session.commit()
@@ -86,7 +157,6 @@ def do_not_want_present(data):
     username = data.get('username')
     room_code = data.get('room_code')
     print(username, room_code)
-    
     if not username or not room_code:
         print("Vyplňte všechny údaje")
         socketio.emit('error', {'message': 'Vyplňte všechny údaje'}, room=request.sid)
@@ -112,45 +182,47 @@ def do_not_want_present(data):
     }, room=room_code)
 
 def handle_leave_room(data):
-    user_id = data.get('user_id')
+    username = data.get('username')
     room_code = data.get('room_code')
     
     room = Room.query.filter_by(room_code=room_code).first()
-    user = User.query.get(user_id)
+    if room and username in room.users:
+        try:
+            room.users.remove(username)
+            if username in room.presenters:
+                try:
+                    room.presenters.remove(username)
+                    db.session.commit()
+                except Exception as e:
+                    print(f"Chyba při odebírání uživatele z presenters: {e}")
 
-    if not room or not user:
-        return  # Můžeme přidat logování chyby nebo vrácení chybové zprávy
-
-    try:
-        # Odebrání uživatele z místnosti
-        if user.id in room.user_ids:
-            room.user_ids.remove(user.id)
-            
-            # Odebrání z prezentujících pokud je tam
-            if user.id in room.presenter_ids:
-                room.presenter_ids.remove(user.id)
-            
-            # Smazání celého uživatele z databáze
-            db.session.delete(user)
             db.session.commit()
+        except Exception as e:
+            print(f"Chyba při odstraňování uživatele: {e}")
+    
+    leave_room(room_code)
+    socketio.emit('room_update', {
+        'users': room.users if room else [],
+        'presenters': room.presenters if room else [],
+        'room_code': room_code,
+        "status": room.status
+    }, room=room_code)
 
-        # Socket.io operace
-        leave_room(room_code)
-        socketio.emit('room_update', {
-            'users': room.user_ids,
-            'presenters': room.presenter_ids,
-            'room_code': room_code
-        }, room=room_code)
+def admin_join(data):
+    room_code = data.get('room_code')
+    if room_code:
+        join_room(room_code)
+        print(f"Admin připojen do místnosti: {room_code}")
 
-    except Exception as e:
-        db.session.rollback()
-        print(f"Chyba při zpracování opuštění místnosti: {str(e)}")
-        # Můžeme přidat vrácení chybové zprávy klientovi
 
 def register_socket_handlers():
     print("Registrace socket handlerů")
-    
     socketio.on_event('join_room', handle_join_room)
     socketio.on_event('leave_room', handle_leave_room)
     socketio.on_event('want_present', want_present)
     socketio.on_event('do_not_want_present', do_not_want_present)
+    socketio.on_event('start_room', start_room)
+    socketio.on_event('stop_room', stop_room)
+    socketio.on_event('waiting_room', waiting_room)
+    socketio.on_event('admin_join', admin_join)
+    socketio.on_event('change_presenter', change_presenter)

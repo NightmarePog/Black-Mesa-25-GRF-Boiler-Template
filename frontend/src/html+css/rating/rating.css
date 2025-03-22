@@ -1,21 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&display=swap');
+
 body {
     margin: 0;
     padding: 20px;
     min-height: 100vh;
     background-color: #f0f2f5;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Dosis', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .container {
-    max-width: 800vh;
+    max-width: 100%;
     width: 100%;
     background: white;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 10vh;
 }
 
 h1 {
@@ -23,6 +26,7 @@ h1 {
     color: #2c3e50;
     margin-top: 1px;
     font-size: 8em;
+    font-family: 'Dosis', sans-serif;
 }
 
 .question-step {
@@ -37,6 +41,7 @@ h2 {
     color: #34495e;
     margin-bottom: 20px;
     font-size: 3em;
+    font-family: 'Dosis', sans-serif;
 }
 
 .scale-container {
@@ -55,6 +60,7 @@ h2 {
     font-size: 3em;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif;
 }
 
 .scale-btn:hover {
@@ -78,6 +84,7 @@ h2 {
     border-radius: 10px;
     resize: vertical;
     font-size: 2em;
+    font-family: 'Dosis', sans-serif;
 }
 
 .nav-buttons {
@@ -87,6 +94,17 @@ h2 {
     margin-top: 30px;
 }
 
+.prev-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 50px 80px;
+    border: none;
+    border-radius: 10px;
+    font-size: 2.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif;
+}
 
 .next-btn, .submit-btn {
     background-color: #27ae60;
@@ -97,6 +115,7 @@ h2 {
     font-size: 2.5em;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Dosis', sans-serif;
 }
 
 .next-btn:disabled, .submit-btn:disabled {
@@ -105,24 +124,14 @@ h2 {
     opacity: 0.7;
 }
 
-.next-btn:not(:disabled):hover, .submit-btn:not(:disabled):hover {
-    background-color: #219a52;
+.prev-btn:hover {
+    background-color: #c0392b;
     transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    
-    .nav-buttons {
-        flex-direction: column;
-    }
-    
-    .prev-btn, .next-btn, .submit-btn {
-        width: 100%;
-        justify-content: center;
-    }
+.next-btn:not(:disabled):hover, .submit-btn:not(:disabled):hover {
+    background-color: #219a52;
+    transform: translateY(-2px);
 }
 
 #timer {
@@ -137,6 +146,7 @@ h2 {
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 1000;
+    font-family: 'Dosis', sans-serif;
 }
 
 #timer.low-time {
@@ -150,7 +160,6 @@ h2 {
     100% { transform: scale(1); }
 }
 
-/* Přidejte nové styly */
 .waiting-screen {
     position: fixed;
     top: 0;
@@ -169,8 +178,81 @@ h2 {
     text-align: center;
     color: #2c3e50;
     line-height: 1.2;
+    font-family: 'Dosis', sans-serif;
 }
 
 .hidden {
     display: none !important;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 4em;
+    }
+    
+    h2 {
+        font-size: 2em;
+    }
+    
+    .scale-btn {
+        padding: 30px 0;
+        font-size: 2em;
+    }
+    
+    .nav-buttons {
+        flex-direction: column;
+    }
+    
+    .prev-btn, .next-btn, .submit-btn {
+        width: 100%;
+        padding: 30px;
+        font-size: 2em;
+    }
+    
+    #timer {
+        font-size: 2em;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .waiting-screen h1 {
+        font-size: 3em;
+    }
+    
+    .comment {
+        font-size: 1.5em;
+    }
+}
+
+/* PŘED existující .scale-btn pravidla */
+.scale-btn.negative {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.scale-btn.negative:hover {
+    background-color: #ffcdd2;
+}
+
+.scale-btn.negative.selected {
+    background-color: #c62828;
+    color: white;
+}
+
+.scale-btn.positive {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.scale-btn.positive:hover {
+    background-color: #c8e6c9;
+}
+
+.scale-btn.positive.selected {
+    background-color: #2e7d32;
+    color: white;
 }

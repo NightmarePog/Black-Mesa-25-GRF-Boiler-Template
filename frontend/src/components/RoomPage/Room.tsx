@@ -13,6 +13,8 @@ const Room: React.FC = () => {
     const [users, setUsers] = useState<string[]>([]);
     const [presenters, setPresenters] = useState<string[]>([]);
     const [currentUser, setCurrentUser] = useState<string>('');
+    const [currentPresenter, setCurrentPresenter] = useState<string | null>(null);
+    const [roomStatus, setRoomStatus] = useState<'waiting' | 'started' | 'offline'>('waiting');
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username') || '';
@@ -31,6 +33,12 @@ const Room: React.FC = () => {
         socket.on('room_update', (data) => {
             setUsers(data.users);
             setPresenters(data.presenters || []);
+            setRoomStatus(data.status);
+            setCurrentPresenter(data.currently_presenting);
+        });
+
+        socket.on('presenter_changed', (data) => {
+            setCurrentPresenter(data.currently_presenting);
         });
 
         socket.on('want_present', (data) => {
@@ -41,6 +49,7 @@ const Room: React.FC = () => {
             setPresenters(data.presenters);
         });
 
+
         socket.on('error', (error) => {
             alert(error.message);
             window.location.href = '/';
@@ -48,8 +57,7 @@ const Room: React.FC = () => {
 
         return () => {
             socket.off('room_update');
-            socket.off('want_present');
-            socket.off('do_not_want_present');
+            socket.off('presenter_changed');
             socket.off('error');
             socket.emit('leave_room', {
                 username: storedUsername,
@@ -81,6 +89,7 @@ const Room: React.FC = () => {
     };
 
     const isPresenting = presenters.includes(currentUser);
+    const isPresentationActive = roomStatus === 'started';
 
     return (
         <div className="room-container">
@@ -96,13 +105,22 @@ const Room: React.FC = () => {
             </div>
 
             <main className="main-content">
-                <h1 className="waiting-title">Čekání na zahájení</h1>
+                {currentPresenter ? (
+                    <h1 className="waiting-title">🎤 Právě prezentuje: {currentPresenter}</h1>
+                ) : (
+                    <h1 className="waiting-title">
+                        {roomStatus === 'started' ? 'Prezentace probíhá' : 'Čekání na zahájení'}
+                    </h1>
+                )}
                 
                 <button 
                     className={`presentation-button ${isPresenting ? 'active' : ''}`}
                     onClick={togglePresentation}
+                    disabled={isPresentationActive}
                 >
-                    {isPresenting ? (
+                    {isPresentationActive ? (
+                        'Prezentace probíhá'
+                    ) : isPresenting ? (
                         <>
                             <span className="icon">⭐</span>
                             Prezentuji
